@@ -85,6 +85,59 @@ export default () => {
         //новый дата объект для доступа к данным формы
         const formData = new FormData(event.target);
         const newRss = Object.fromEntries(formData);
-    }
 
-};
+        const schema = yup.object().shape({
+            url: yup.string().required().url().notOneOf(watchedState.loadedFeeds.map(([url]) => url)),//должна быть строка, не должен быть пустой и не один из повторяющихся юрлы
+        });
+    
+        schema
+            .validate(newRss, { abortEarly: false })// проверка на нарушение верхних правил
+            .then((data) => {
+            watchedState.status = 'loading';// загрузка ленты если все ок
+    
+            axios
+                .get(getUrl(data.url), { timeout: 5000 })
+                .then((response) => {
+                if (response.status === 200) {
+                    const { feed, posts } = parse(response.data);// фиды и лента новостей если все окей
+                    watchedState.contents.feeds.unshift(feed);
+                    watchedState.contents.posts = [
+                    ...posts,
+                    ...watchedState.contents.posts,
+                    ];
+                    watchedState.loadedFeeds.push([data.url, feed.id]);
+                    watchedState.status = 'filling';
+                } else {
+                    throw new Error('errors.urlIsNotRSS');
+                }
+                })
+                .catch((error) => {
+                const { message } = error;
+                watchedState.form.errors = (message === 'timeout of 5000ms exceeded') ? 'errors.timeout' : message;
+                watchedState.status = 'filling';
+                });
+            })
+            .catch((err) => {
+            const { message } = err;
+            watchedState.form.errors = message;
+            watchedState.status = 'filling';
+            });
+        });
+    
+        elements.posts.addEventListener('click', (event) => {// тыкнуть посмотреть новость
+        if (event.target.dataset.id) {
+            const { id } = event.target.dataset;
+            watchedState.contents.posts.forEach((post) => {
+            if (post.id === id) {
+                watchedState.modal = {
+                title: post.title,
+                description: post.description,
+                href: post.url,
+                id: post.id,
+                };
+                watchedState.ui.seenPosts.push(post.id);
+            }
+            });
+        }
+        });
+    }

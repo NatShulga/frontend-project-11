@@ -107,7 +107,8 @@
     "webpack-merge": "^6.0.1",
     "webpack-sources": "^3.2.3",
     "which": "^2.0.2",
-    "wildcard": "^2.0.1"
+    "wildcard": "^2.0.1",
+    "yup": "^1.6.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
