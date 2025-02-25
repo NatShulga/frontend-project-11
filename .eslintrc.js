@@ -17,6 +17,7 @@ module.exports = {
       sourceType: 'module',
     },
     rules: {
+      "spellcheck/spell-checker": "off",
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'semi': ['error', 'always'],// требовать точки с запятой
