@@ -1,6 +1,8 @@
 /* eslint-disable spellcheck/spell-checker */
 import * as yup from 'yup';
-
+import axios from 'axios';
+import locales from './locales/index.js';
+import parse from './rss-parser.js';
 
 //сначала прокси для получения данных с сервера
 const getUrlRss = (rssUrl) => {
@@ -23,7 +25,7 @@ export default () => {
 
     //изначальное состояние
     const initialState = {
-        status: 'filling', // 'loading'
+        status: 'filling', // загрузка
         form: {
         errors: '',
         },
@@ -43,11 +45,18 @@ export default () => {
         },
     };
 
-    const watchedState = watch(elements, initialState);
+    const i18n = i18next.createInstance();
+i18n.init({
+    lng: 'ru',
+    debug: false,
+    resources: locales,
+});
+
+    const watchedState = watch(elements, initialState, i18n);
 
     //ищем новости
     const newNewsPost = () => {
-        const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);//заголовки новостей
+        const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);//заголовки новостейU
         const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) => axios.get(getUrlRss(url))
         .then((response) => {
             const { posts } = parse(response.data);
@@ -108,7 +117,7 @@ export default () => {
                     watchedState.loadedFeeds.push([data.url, feed.id]);
                     watchedState.status = 'filling';
                 } else {
-                    throw new Error('errors.urlIsNotRSS');
+                    throw new Error('errors.notRSS');
                 }
                 })
                 .catch((error) => {
