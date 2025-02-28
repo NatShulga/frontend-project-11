@@ -8,14 +8,14 @@ import parse from "./rss-parser.js";
 
 //сначала прокси для получения данных с сервера
 const getUrlRss = (rssUrl) => {
-  const proxyUrl = new URL("https://allorigins.hexlet.app/get");
-  proxyUrl.searchParams.set("disableCache", true); // не использовать кэш, а добавлять новые данные
-  proxyUrl.searchParams.set("url", rssUrl);
-  return proxyUrl.toString();
+const proxyUrl = new URL("https://allorigins.hexlet.app/get");
+proxyUrl.searchParams.set("disableCache", true); // не использовать кэш, а добавлять новые данные
+proxyUrl.searchParams.set("url", rssUrl);
+return proxyUrl.toString();
 };
 
 export default () => {
-  const elements = {
+const elements = {
     form: document.querySelector(".rss-form"),
     input: document.querySelector("#url-input"),
     feedback: document.querySelector(".feedback"),
@@ -23,61 +23,61 @@ export default () => {
     feeds: document.querySelector(".feeds"),
     modal: document.querySelector(".modal"),
     submitButton: document.querySelector("form button"),
-  };
+};
 
   //изначальное состояние
-  const initialState = {
+const initialState = {
     status: "filling", // загрузка
     form: {
-      errors: "",
+    errors: "",
     },
     loadedFeeds: [],
     contents: {
-      feeds: [],
-      posts: [],
+    feeds: [],
+    posts: [],
     },
     ui: {
-      seenPosts: [],
+    seenPosts: [],
     },
     modal: {
-      title: "",
-      description: "",
-      id: "",
-      href: "",
+    title: "",
+    description: "",
+    id: "",
+    href: "",
     },
-  };
+};
 
-  const i18n = i18next.createInstance();
-  i18n.init({
+const i18n = i18next.createInstance();
+i18n.init({
     lng: "ru",
     debug: false,
     resources: locales,
-  });
+});
 
-  const watchedState = watch(elements, initialState, i18n);
+const watchedState = watch(elements, i18n, initialState);
 
   //ищем новости
-  const newNewsPost = () => {
+const newNewsPost = () => {
     if (!watchedState || !watchedState.contents) {
-      console.error(
+    console.error(
         "Ошибка: watchedState или watchedState.contents не определены!"
-      );
-      return;
+    );
+    return;
     }
     const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title); //заголовки новостейU
     const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) =>
-      axios
+    axios
         .get(getUrlRss(url))
         .then((response) => {
-          const { posts } = parse(response.data);
-          const newPosts = posts
+        const { posts } = parse(response.data);
+        const newPosts = posts
             .filter((post) => !titlesOfPosts.includes(post.title))
             .map((item) => {
               //ищем новые посты, добавляем в список
               const feedId = idOfFeed; //уникальные не повторяющиеся новости
-              return { ...item, feedId };
+            return { ...item, feedId };
             });
-          if (watchedState.loadedFeeds.length > 0) {
+        if (watchedState.loadedFeeds.length > 0) {
             watchedState.contents.posts = [
             ...newPosts,
             ...watchedState.contents.posts,
@@ -114,7 +114,7 @@ elements.form.addEventListener("submit", (event) => {
     const newRss = Object.fromEntries(formData);
 
     const schema = yup.object().shape({
-      url: yup
+    url: yup
         .string()
         .required()
         .url()
@@ -123,66 +123,66 @@ elements.form.addEventListener("submit", (event) => {
 
     schema
       .validate(newRss, { abortEarly: false }) // проверка на нарушение верхних правил
-      .then((data) => {
+    .then((data) => {
         watchedState.status = "loading"; // загрузка ленты если все ок
 
         axios
-          .get(getUrlRss(data.url), { timeout: 5000 })
-          .then((response) => {
+        .get(getUrlRss(data.url), { timeout: 5000 })
+        .then((response) => {
             if (response.status === 200) {
               const { feed, posts } = parse(response.data); // фиды и лента новостей если все окей
-              watchedState.contents.feeds.unshift(feed);
-              watchedState.contents.posts = [
+            watchedState.contents.feeds.unshift(feed);
+            watchedState.contents.posts = [
                 ...posts,
                 ...watchedState.contents.posts,
-              ];
-              watchedState.loadedFeeds.push([data.url, feed.id]);
-              watchedState.status = "filling";
+            ];
+            watchedState.loadedFeeds.push([data.url, feed.id]);
+            watchedState.status = "filling";
             } else {
-              throw new Error("errors.notRSS");
+            throw new Error("errors.notRSS");
             }
-          })
-          .catch((error) => {
+        })
+        .catch((error) => {
             const { message } = error;
             watchedState.form.errors =
-              message === "timeout of 5000ms exceeded"
+            message === "timeout of 5000ms exceeded"
                 ? "errors.timeout"
                 : message;
             watchedState.status = "filling";
-          });
-      })
-      .catch((err) => {
+        });
+    })
+    .catch((err) => {
         const { message } = err;
         watchedState.form.errors = message;
         watchedState.status = "filling";
-      });
-  });
+    });
+});
 
-  elements.posts.addEventListener("click", (event) => {
+elements.posts.addEventListener("click", (event) => {
     // тыкнуть посмотреть новость
     if (event.target.dataset.id) {
-      const { id } = event.target.dataset;
-      if (
+    const { id } = event.target.dataset;
+    if (
         !watchedState ||
         !watchedState.contents ||
         !watchedState.contents.posts
-      ) {
+    ) {
         console.error(
-          "Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!"
+        "Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!"
         );
         return;
-      }
-      watchedState.contents.posts.forEach((post) => {
+    }
+    watchedState.contents.posts.forEach((post) => {
         if (post.id === id) {
-          watchedState.modal = {
+        watchedState.modal = {
             title: post.title,
             description: post.description,
             href: post.url,
             id: post.id,
-          };
-          watchedState.ui.seenPosts.push(post.id);
+        };
+        watchedState.ui.seenPosts.push(post.id);
         }
-      });
+    });
     }
-  });
+});
 };
