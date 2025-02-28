@@ -18,6 +18,7 @@ module.exports = {
   },
   rules: {
     'spellcheck/spell-checker': 'off',
+    'function-paren-newline': ['error', 'multiline'],
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     semi: ['error', 'always'],
