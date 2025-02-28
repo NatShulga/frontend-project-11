@@ -1,35 +1,34 @@
-/* eslint-disable spellcheck/spell-checker */
-import * as yup from "yup";
-import i18next from "i18next";
-import axios from "axios";
-import watch from "./view.js";
-import locales from "./locales/index.js";
-import parse from "./rss-parser.js";
+import * as yup from 'yup';
+import i18next from 'i18next';
+import axios from 'axios';
+import watch from './view.js';
+import locales from './locales/index.js';
+import parse from './rss-parser.js';
 
 //сначала прокси для получения данных с сервера
 const getUrlRss = (rssUrl) => {
-const proxyUrl = new URL("https://allorigins.hexlet.app/get");
-proxyUrl.searchParams.set("disableCache", true); // не использовать кэш, а добавлять новые данные
-proxyUrl.searchParams.set("url", rssUrl);
-return proxyUrl.toString();
+const proxyUrl = new URL('https://allorigins.hexlet.app/get');
+    proxyUrl.searchParams.set('disableCache', true); // не использовать кэш, а добавлять новые данные
+    proxyUrl.searchParams.set('url', rssUrl);
+    return proxyUrl.toString();
 };
 
 export default () => {
 const elements = {
-    form: document.querySelector(".rss-form"),
-    input: document.querySelector("#url-input"),
-    feedback: document.querySelector(".feedback"),
-    posts: document.querySelector(".posts"),
-    feeds: document.querySelector(".feeds"),
-    modal: document.querySelector(".modal"),
-    submitButton: document.querySelector("form button"),
+    form: document.querySelector('.rss-form'),
+    input: document.querySelector('#url-input'),
+    feedback: document.querySelector('.feedback'),
+    posts: document.querySelector('.posts'),
+    feeds: document.querySelector('.feeds'),
+    modal: document.querySelector('.modal'),
+    submitButton: document.querySelector('form button'),
 };
 
   //изначальное состояние
 const initialState = {
-    status: "filling", // загрузка
+    status: 'filling', // загрузка
     form: {
-    errors: "",
+    errors: '',
     },
     loadedFeeds: [],
     contents: {
@@ -49,7 +48,7 @@ const initialState = {
 
 const i18n = i18next.createInstance();
 i18n.init({
-    lng: "ru",
+    lng: 'ru',
     debug: false,
     resources: locales,
 });
@@ -60,7 +59,7 @@ const watchedState = watch(elements, i18n, initialState);
 const newNewsPost = () => {
     if (!watchedState || !watchedState.contents) {
     console.error(
-        "Ошибка: watchedState или watchedState.contents не определены!"
+        'Ошибка: watchedState или watchedState.contents не определены!'
     );
     return;
     }
@@ -85,7 +84,7 @@ const newNewsPost = () => {
         }
         })
         .catch((error) => {
-        console.log("error: ", error);
+        console.log('error: ', error);
         })
     );
     Promise.all(arrayOfPromises).finally(() => {
@@ -98,15 +97,15 @@ newNewsPost();
   //локализация yup
 yup.setLocale({
     mixed: {
-    required: "errors.required",
-    notOneOf: "errors.rssAlreadyExists",
+    required: 'errors.required',
+    notOneOf: 'errors.rssAlreadyExists',
     },
     string: {
-    url: "errors.invalidForm",
+    url: 'errors.invalidForm',
     },
 });
 
-elements.form.addEventListener("submit", (event) => {
+elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     //новый дата объект для доступа к данным формы
@@ -124,7 +123,7 @@ elements.form.addEventListener("submit", (event) => {
     schema
       .validate(newRss, { abortEarly: false }) // проверка на нарушение верхних правил
     .then((data) => {
-        watchedState.status = "loading"; // загрузка ленты если все ок
+        watchedState.status = 'loading'; // загрузка ленты если все ок
 
         axios
         .get(getUrlRss(data.url), { timeout: 5000 })
@@ -137,28 +136,28 @@ elements.form.addEventListener("submit", (event) => {
                 ...watchedState.contents.posts,
             ];
             watchedState.loadedFeeds.push([data.url, feed.id]);
-            watchedState.status = "filling";
+            watchedState.status = 'filling';
             } else {
-            throw new Error("errors.notRSS");
+            throw new Error('errors.notRSS');
             }
         })
         .catch((error) => {
             const { message } = error;
             watchedState.form.errors =
-            message === "timeout of 5000ms exceeded"
-                ? "errors.timeout"
+            message === 'timeout of 5000ms exceeded'
+                ? 'errors.timeout'
                 : message;
-            watchedState.status = "filling";
+            watchedState.status = 'filling';
         });
     })
     .catch((err) => {
         const { message } = err;
         watchedState.form.errors = message;
-        watchedState.status = "filling";
+        watchedState.status = 'filling';
     });
 });
 
-elements.posts.addEventListener("click", (event) => {
+elements.posts.addEventListener('click', (event) => {
     // тыкнуть посмотреть новость
     if (event.target.dataset.id) {
     const { id } = event.target.dataset;
@@ -168,7 +167,7 @@ elements.posts.addEventListener("click", (event) => {
         !watchedState.contents.posts
     ) {
         console.error(
-        "Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!"
+        'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!'
         );
         return;
     }
