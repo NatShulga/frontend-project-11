@@ -22,7 +22,7 @@ const parse = (data) => {
 
   const items = doc.querySelectorAll('item');
   items.forEach((item) => {
-  const post = {
+    const post = {
       title: item.querySelector('title').textContent,
       url: item.querySelector('link').textContent,
       description: item.querySelector('description').textContent,

@@ -20,7 +20,7 @@ module.exports = {
     'spellcheck/spell-checker': 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'semi': ['error', 'always'],// требовать точки с запятой
-    'quotes': ['error', 'single'], //требовать одинарные кавычки
+    'semi': ['error', 'always'],
+    'quotes': ['error', 'single']
   },
 };

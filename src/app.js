@@ -137,10 +137,7 @@ elements.form.addEventListener('submit', (event) => {
         })
         .catch((error) => {
             const { message } = error;
-            watchedState.form.errors =
-            message === 'timeout of 5000ms exceeded'
-                ? 'errors.timeout'
-                : message;
+            watchedState.form.errors = message === 'timeout of 5000ms exceeded' ? 'errors.timeout' : message;
             watchedState.status = 'filling';
         });
     })
@@ -154,14 +151,8 @@ elements.form.addEventListener('submit', (event) => {
 elements.posts.addEventListener('click', (event) => {
     if (event.target.dataset.id) {
     const { id } = event.target.dataset;
-    if (
-        !watchedState ||
-        !watchedState.contents ||
-        !watchedState.contents.posts
-    ) {
-        console.error(
-        'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!'
-        );
+    if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
+        console.error('Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!')
         return;
     }
     watchedState.contents.posts.forEach((post) => {
