@@ -62,15 +62,15 @@ export default () => {
     }
     const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);
     const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) => axios
-        .get(getUrlRss(url))
-        .then((response) => {
-          const { posts } = parse(response.data);
-          const newPosts = posts
-            .filter((post) => !titlesOfPosts.includes(post.title))
-            .map((item) => {
+      .get(getUrlRss(url))
+      .then((response) => {
+        const { posts } = parse(response.data);
+        const newPosts = posts
+          .filter((post) => !titlesOfPosts.includes(post.title))
+          .map((item) => {
               const feedId = idOfFeed;
-              return { ...item, feedId };
-            });
+            return { ...item, feedId };
+          });
         if (watchedState.loadedFeeds.length > 0) {
           watchedState.contents.posts = [
             ...newPosts,
