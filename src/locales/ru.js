@@ -6,12 +6,12 @@ export default {
       rssAlreadyExists: 'RSS уже существует',
       required: 'Не должно быть пустым',
       timeout: 'Ошибка сети',
-      },
-      success: 'RSS успешно загружен',
-      feeds: 'Фиды',
-      posts: {
-      title: 'Посты',
-      button: 'Просмотр',
+    },
+    success: 'RSS успешно загружен',
+    feeds: 'Фиды',
+    posts: {
+    title: 'Посты',
+    button: 'Просмотр',
     },
     'Network Error': 'Ошибка сети',
   },

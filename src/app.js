@@ -6,14 +6,14 @@ import locales from './locales/index.js';
 import parse from './rss-parser.js';
 
 const getUrlRss = (rssUrl) => {
-const proxyUrl = new URL('https://allorigins.hexlet.app/get');
-    proxyUrl.searchParams.set('disableCache', true);
-    proxyUrl.searchParams.set('url', rssUrl);
-    return proxyUrl.toString();
+  const proxyUrl = new URL('https://allorigins.hexlet.app/get');
+  proxyUrl.searchParams.set('disableCache', true);
+  proxyUrl.searchParams.set('url', rssUrl);
+  return proxyUrl.toString();
 };
 
 export default () => {
-const elements = {
+  const elements = {
     form: document.querySelector('.rss-form'),
     input: document.querySelector('#url-input'),
     feedback: document.querySelector('.feedback'),
@@ -21,40 +21,39 @@ const elements = {
     feeds: document.querySelector('.feeds'),
     modal: document.querySelector('.modal'),
     submitButton: document.querySelector('form button'),
-};
+  };
 
-const initialState = {
+  const initialState = {
     status: 'filling',
     form: {
-    errors: '',
+      errors: '',
     },
     loadedFeeds: [],
     contents: {
-    feeds: [],
-    posts: [],
+      feeds: [],
+      posts: [],
     },
     ui: {
-    seenPosts: [],
+      seenPosts: [],
     },
     modal: {
-    title: "",
-    description: "",
-    id: "",
-    href: "",
+      title: '',
+      description: '',
+      id: '',
+      href: '',
     },
-};
+  };
 
-const i18n = i18next.createInstance();
-i18n.init({
+  const i18n = i18next.createInstance();
+  i18n.init({
     lng: 'ru',
     debug: false,
     resources: locales,
-});
+  });
 
-const watchedState = watch(elements, i18n, initialState);
+  const watchedState = watch(elements, i18n, initialState);
 
-  //ищем новости
-const newNewsPost = () => {
+  const newNewsPost = () => {
     if (!watchedState || !watchedState.contents) {
     console.error(
         'Ошибка: watchedState или watchedState.contents не определены!'
@@ -152,7 +151,7 @@ elements.posts.addEventListener('click', (event) => {
     if (event.target.dataset.id) {
     const { id } = event.target.dataset;
     if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
-        console.error('Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!')
+        console.error('Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
         return;
     }
     watchedState.contents.posts.forEach((post) => {
