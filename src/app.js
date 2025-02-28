@@ -68,7 +68,7 @@ export default () => {
         const newPosts = posts
           .filter((post) => !titlesOfPosts.includes(post.title))
           .map((item) => {
-              const feedId = idOfFeed;
+            const feedId = idOfFeed;
             return { ...item, feedId };
           });
         if (watchedState.loadedFeeds.length > 0) {
@@ -81,7 +81,6 @@ export default () => {
       .catch((error) => {
         console.log('error: ', error);
       }),
-
     );
 
     Promise.all(arrayOfPromises).finally(() => {
