@@ -80,8 +80,7 @@ export default () => {
       })
       .catch((error) => {
         console.log('error: ', error);
-      }),
-    );
+      }));
 
     Promise.all(arrayOfPromises).finally(() => {
       setTimeout(() => newNewsPost(), 5000);
