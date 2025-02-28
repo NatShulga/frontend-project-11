@@ -10,8 +10,8 @@ export default {
     success: 'RSS успешно загружен',
     feeds: 'Фиды',
     posts: {
-    title: 'Посты',
-    button: 'Просмотр',
+      title: 'Посты',
+      button: 'Просмотр',
     },
     'Network Error': 'Ошибка сети',
   },

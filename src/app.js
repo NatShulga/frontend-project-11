@@ -55,35 +55,36 @@ export default () => {
 
   const newNewsPost = () => {
     if (!watchedState || !watchedState.contents) {
-    console.error(
-        'Ошибка: watchedState или watchedState.contents не определены!'
-    );
-    return;
+      console.error(
+        'Ошибка: watchedState или watchedState.contents не определены!',
+      );
+      return;
     }
     const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);
     const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) =>
-    axios
+      axios
         .get(getUrlRss(url))
         .then((response) => {
-        const { posts } = parse(response.data);
-        const newPosts = posts
+          const { posts } = parse(response.data);
+          const newPosts = posts
             .filter((post) => !titlesOfPosts.includes(post.title))
             .map((item) => {
-            const feedId = idOfFeed;
-            return { ...item, feedId };
+              const feedId = idOfFeed;
+              return { ...item, feedId };
             });
-        if (watchedState.loadedFeeds.length > 0) {
+          if (watchedState.loadedFeeds.length > 0) {
             watchedState.contents.posts = [
-            ...newPosts,
-            ...watchedState.contents.posts,
+              ...newPosts,
+              ...watchedState.contents.posts,
             ];
-        }
-        })
+          }
+          })
         .catch((error) => {
         console.log('error: ', error);
-        })
+        }),
+
     );
-    Promise.all(arrayOfPromises).finally(() => {
+      Promise.all(arrayOfPromises).finally(() => {
     setTimeout(() => newNewsPost(), 5000);
     });
 };
@@ -91,11 +92,11 @@ export default () => {
 newNewsPost();
 
 yup.setLocale({
-    mixed: {
-    required: 'errors.required',
+      mixed: {
+      required: 'errors.required',
     notOneOf: 'errors.rssAlreadyExists',
     },
-    string: {
+      string: {
     url: 'errors.invalidForm',
     },
 });
