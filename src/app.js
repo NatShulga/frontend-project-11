@@ -61,8 +61,7 @@ export default () => {
       return;
     }
     const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);
-    const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) =>
-      axios
+    const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) => axios
         .get(getUrlRss(url))
         .then((response) => {
           const { posts } = parse(response.data);
@@ -81,34 +80,35 @@ export default () => {
           })
         .catch((error) => {
         console.log('error: ', error);
-        }),
+          }),
 
     );
-      Promise.all(arrayOfPromises).finally(() => {
-    setTimeout(() => newNewsPost(), 5000);
+
+    Promise.all(arrayOfPromises).finally(() => {
+      setTimeout(() => newNewsPost(), 5000);
     });
-};
+  };
 
-newNewsPost();
+  newNewsPost();
 
-yup.setLocale({
-      mixed: {
+  yup.setLocale({
+    mixed: {
       required: 'errors.required',
-    notOneOf: 'errors.rssAlreadyExists',
+      notOneOf: 'errors.rssAlreadyExists',
     },
-      string: {
-    url: 'errors.invalidForm',
+    string: {
+      url: 'errors.invalidForm',
     },
-});
+  });
 
-elements.form.addEventListener('submit', (event) => {
+  elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.target);
     const newRss = Object.fromEntries(formData);
 
     const schema = yup.object().shape({
-    url: yup
+      url: yup
         .string()
         .required()
         .url()
@@ -116,14 +116,14 @@ elements.form.addEventListener('submit', (event) => {
     });
 
     schema
-    .validate(newRss, { abortEarly: false })
-    .then((data) => {
+      .validate(newRss, { abortEarly: false })
+      .then((data) => {
         watchedState.status = 'loading';
         axios
-        .get(getUrlRss(data.url), { timeout: 5000 })
-        .then((response) => {
+          .get(getUrlRss(data.url), { timeout: 5000 })
+          .then((response) => {
             if (response.status === 200) {
-            const { feed, posts } = parse(response.data);
+              const { feed, posts } = parse(response.data);
             watchedState.contents.feeds.unshift(feed);
             watchedState.contents.posts = [
                 ...posts,
@@ -157,15 +157,15 @@ elements.posts.addEventListener('click', (event) => {
     }
     watchedState.contents.posts.forEach((post) => {
         if (post.id === id) {
-        watchedState.modal = {
+          watchedState.modal = {
             title: post.title,
             description: post.description,
             href: post.url,
             id: post.id,
-        };
-        watchedState.ui.seenPosts.push(post.id);
+          };
+          watchedState.ui.seenPosts.push(post.id);
         }
-    });
+      });
     }
-});
+  });
 };
