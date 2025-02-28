@@ -71,16 +71,16 @@ export default () => {
               const feedId = idOfFeed;
               return { ...item, feedId };
             });
-          if (watchedState.loadedFeeds.length > 0) {
-            watchedState.contents.posts = [
-              ...newPosts,
-              ...watchedState.contents.posts,
-            ];
-          }
-          })
-        .catch((error) => {
+        if (watchedState.loadedFeeds.length > 0) {
+          watchedState.contents.posts = [
+            ...newPosts,
+            ...watchedState.contents.posts,
+          ];
+        }
+      })
+      .catch((error) => {
         console.log('error: ', error);
-          }),
+      }),
 
     );
 
@@ -124,38 +124,38 @@ export default () => {
           .then((response) => {
             if (response.status === 200) {
               const { feed, posts } = parse(response.data);
-            watchedState.contents.feeds.unshift(feed);
-            watchedState.contents.posts = [
+              watchedState.contents.feeds.unshift(feed);
+              watchedState.contents.posts = [
                 ...posts,
                 ...watchedState.contents.posts,
-            ];
-            watchedState.loadedFeeds.push([data.url, feed.id]);
-            watchedState.status = 'filling';
+              ];
+              watchedState.loadedFeeds.push([data.url, feed.id]);
+              watchedState.status = 'filling';
             } else {
-            throw new Error('errors.notRSS');
+              throw new Error('errors.notRSS');
             }
-        })
-        .catch((error) => {
+          })
+          .catch((error) => {
             const { message } = error;
             watchedState.form.errors = message === 'timeout of 5000ms exceeded' ? 'errors.timeout' : message;
             watchedState.status = 'filling';
-        });
-    })
-    .catch((err) => {
+          });
+      })
+      .catch((err) => {
         const { message } = err;
         watchedState.form.errors = message;
         watchedState.status = 'filling';
-    });
-});
+      });
+  });
 
-elements.posts.addEventListener('click', (event) => {
+  elements.posts.addEventListener('click', (event) => {
     if (event.target.dataset.id) {
-    const { id } = event.target.dataset;
-    if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
+      const { id } = event.target.dataset;
+      if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
         console.error('Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
         return;
-    }
-    watchedState.contents.posts.forEach((post) => {
+      }
+      watchedState.contents.posts.forEach((post) => {
         if (post.id === id) {
           watchedState.modal = {
             title: post.title,
