@@ -5,10 +5,9 @@ import watch from './view.js';
 import locales from './locales/index.js';
 import parse from './rss-parser.js';
 
-//сначала прокси для получения данных с сервера
 const getUrlRss = (rssUrl) => {
 const proxyUrl = new URL('https://allorigins.hexlet.app/get');
-    proxyUrl.searchParams.set('disableCache', true); // не использовать кэш, а добавлять новые данные
+    proxyUrl.searchParams.set('disableCache', true);
     proxyUrl.searchParams.set('url', rssUrl);
     return proxyUrl.toString();
 };
@@ -24,9 +23,8 @@ const elements = {
     submitButton: document.querySelector('form button'),
 };
 
-  //изначальное состояние
 const initialState = {
-    status: 'filling', // загрузка
+    status: 'filling',
     form: {
     errors: '',
     },
@@ -63,7 +61,7 @@ const newNewsPost = () => {
     );
     return;
     }
-    const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title); //заголовки новостейU
+    const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);
     const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) =>
     axios
         .get(getUrlRss(url))
@@ -72,8 +70,7 @@ const newNewsPost = () => {
         const newPosts = posts
             .filter((post) => !titlesOfPosts.includes(post.title))
             .map((item) => {
-              //ищем новые посты, добавляем в список
-              const feedId = idOfFeed; //уникальные не повторяющиеся новости
+            const feedId = idOfFeed;
             return { ...item, feedId };
             });
         if (watchedState.loadedFeeds.length > 0) {
@@ -94,7 +91,6 @@ const newNewsPost = () => {
 
 newNewsPost();
 
-  //локализация yup
 yup.setLocale({
     mixed: {
     required: 'errors.required',
@@ -108,7 +104,6 @@ yup.setLocale({
 elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
 
-    //новый дата объект для доступа к данным формы
     const formData = new FormData(event.target);
     const newRss = Object.fromEntries(formData);
 
@@ -117,19 +112,18 @@ elements.form.addEventListener('submit', (event) => {
         .string()
         .required()
         .url()
-        .notOneOf(watchedState.loadedFeeds.map(([url]) => url)), //должна быть строка, не должен быть пустой и не один из повторяющихся юрлов
+        .notOneOf(watchedState.loadedFeeds.map(([url]) => url)),
     });
 
     schema
-      .validate(newRss, { abortEarly: false }) // проверка на нарушение верхних правил
+    .validate(newRss, { abortEarly: false })
     .then((data) => {
-        watchedState.status = 'loading'; // загрузка ленты если все ок
-
+        watchedState.status = 'loading';
         axios
         .get(getUrlRss(data.url), { timeout: 5000 })
         .then((response) => {
             if (response.status === 200) {
-              const { feed, posts } = parse(response.data); // фиды и лента новостей если все окей
+            const { feed, posts } = parse(response.data);
             watchedState.contents.feeds.unshift(feed);
             watchedState.contents.posts = [
                 ...posts,
@@ -158,7 +152,6 @@ elements.form.addEventListener('submit', (event) => {
 });
 
 elements.posts.addEventListener('click', (event) => {
-    // тыкнуть посмотреть новость
     if (event.target.dataset.id) {
     const { id } = event.target.dataset;
     if (
