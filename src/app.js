@@ -120,7 +120,7 @@ export default () => {
 
     schema
       .validate(newRss, { abortEarly: false })
-      .then((newRss) => {
+      .then(() => {
         watchedState.status = 'loading';
         axios
           .get(getUrlRss(newRss.url), { timeout: 5000 })
