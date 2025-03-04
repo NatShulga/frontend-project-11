@@ -120,7 +120,7 @@ export default () => {
         axios
           .get(getUrlRss(data.url), { timeout: 5000 })
           .then((response) => {
-            if (response.status === 200) {
+            if (response.status >= 200 && response.status < 300) {
               const { feed, posts } = parse(response.data);
               watchedState.contents.feeds.unshift(feed);
               watchedState.contents.posts = [
