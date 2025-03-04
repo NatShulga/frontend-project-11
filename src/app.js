@@ -1,34 +1,33 @@
-import * as yup from 'yup';
-import i18next from 'i18next';
-import axios from 'axios';
-import watch from './view.js';
-import locales from './locales/index.js';
-import parse from './rss-parser.js';
-import { uniqueId } from 'lodash';
-import parseXML from './rss-parser.js';
+import * as yup from "yup";
+import i18next from "i18next";
+import axios from "axios";
+import { uniqueId } from "lodash";
+import watch from "./view.js";
+import locales from "./locales/index.js";
+import parseXML from "./rss-parser.js";
 
 const getUrlRss = (rssUrl) => {
-  const proxyUrl = new URL('https://allorigins.hexlet.app/get');
-  proxyUrl.searchParams.set('disableCache', true);
-  proxyUrl.searchParams.set('url', rssUrl);
+  const proxyUrl = new URL("https://allorigins.hexlet.app/get");
+  proxyUrl.searchParams.set("disableCache", true);
+  proxyUrl.searchParams.set("url", rssUrl);
   return proxyUrl.toString();
 };
 
 export default () => {
   const elements = {
-    form: document.querySelector('.rss-form'),
-    input: document.querySelector('#url-input'),
-    feedback: document.querySelector('.feedback'),
-    posts: document.querySelector('.posts'),
-    feeds: document.querySelector('.feeds'),
-    modal: document.querySelector('.modal'),
-    submitButton: document.querySelector('form button'),
+    form: document.querySelector(".rss-form"),
+    input: document.querySelector("#url-input"),
+    feedback: document.querySelector(".feedback"),
+    posts: document.querySelector(".posts"),
+    feeds: document.querySelector(".feeds"),
+    modal: document.querySelector(".modal"),
+    submitButton: document.querySelector("form button"),
   };
 
   const initialState = {
-    status: 'filling',
+    status: "filling",
     form: {
-      errors: '',
+      errors: "",
     },
     loadedFeeds: [],
     contents: {
@@ -39,16 +38,16 @@ export default () => {
       seenPosts: [],
     },
     modal: {
-      title: '',
-      description: '',
-      id: '',
-      href: '',
+      title: "",
+      description: "",
+      id: "",
+      href: "",
     },
   };
 
   const i18n = i18next.createInstance();
   i18n.init({
-    lng: 'ru',
+    lng: "ru",
     debug: false,
     resources: locales,
   });
@@ -58,32 +57,34 @@ export default () => {
   const newNewsPost = () => {
     if (!watchedState || !watchedState.contents) {
       console.error(
-        'Ошибка: watchedState или watchedState.contents не определены!',
+        "Ошибка: watchedState или watchedState.contents не определены!"
       );
       return;
     }
     const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);
-    const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) => axios
-      .get(getUrlRss(url))
-      .then((response) => {
-        const { posts } = parse(response.data);
-        const newPosts = posts
-          .filter((post) => !titlesOfPosts.includes(post.title))
-          .map((item) => {
-            const feedId = idOfFeed;
-            const id = uniqueId('post_');
-            return { ...item, feedId, id };
-          });
-        if (watchedState.loadedFeeds.length > 0) {
-          watchedState.contents.posts = [
-            ...newPosts,
-            ...watchedState.contents.posts,
-          ];
-        }
-      })
-      .catch((error) => {
-        console.log('error: ', error);
-      }));
+    const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) =>
+      axios
+        .get(getUrlRss(url))
+        .then((response) => {
+          const { posts } = parse(response.data);
+          const newPosts = posts
+            .filter((post) => !titlesOfPosts.includes(post.title))
+            .map((item) => {
+              const feedId = idOfFeed;
+              const id = uniqueId("post_");
+              return { ...item, feedId, id };
+            });
+          if (watchedState.loadedFeeds.length > 0) {
+            watchedState.contents.posts = [
+              ...newPosts,
+              ...watchedState.contents.posts,
+            ];
+          }
+        })
+        .catch((error) => {
+          console.log("error: ", error);
+        })
+    );
 
     Promise.all(arrayOfPromises).finally(() => {
       setTimeout(() => newNewsPost(), 5000);
@@ -94,15 +95,15 @@ export default () => {
 
   yup.setLocale({
     mixed: {
-      required: 'errors.required',
-      notOneOf: 'errors.rssAlreadyExists',
+      required: "errors.required",
+      notOneOf: "errors.rssAlreadyExists",
     },
     string: {
-      url: 'errors.invalidForm',
+      url: "errors.invalidForm",
     },
   });
 
-  elements.form.addEventListener('submit', (event) => {
+  elements.form.addEventListener("submit", (event) => {
     event.preventDefault();
 
     const formData = new FormData(event.target);
@@ -117,58 +118,70 @@ export default () => {
     });
 
     schema
-    .validate(newRss, { abortEarly: false })
-    .then((data) => {
-      watchedState.status = 'loading';
-      axios
-        .get(getUrlRss(data.url), { timeout: 5000 })
-        .then((response) => {
-          if (response.status >= 200 && response.status < 300) {
-            const { title, link, description, items } = parseXML(response.data);
-            const feedId = uniqueId('feed_');
-            const feed = {
+      .validate(newRss, { abortEarly: false })
+      .then((data) => {
+        watchedState.status = "loading";
+        axios
+          .get(getUrlRss(data.url), { timeout: 5000 })
+          .then((response) => {
+            if (response.status >= 200 && response.status < 300) {
+              const { title, link, description, items } = parseXML(
+                response.data
+              );
+
+              const feedId = uniqueId("feed_");
+              const feed = {
               url: data.url,
-              title: title,
-              link: link,
-              description: description,
-              id: feedId,
-            };
+              title,
+              link,
+              description,
+                id: feedId,
+              };
 
-            const posts = items.map((item) => ({
-              ...item,
-              id: uniqueId('post_'),
-              feedId: feedId,
-            }));
+              const posts = items.map((item) => ({
+                ...item,
+                id: uniqueId("post_"),
+                feedId,
+              }));
 
-            watchedState.contents.feeds.unshift(feed);
-            watchedState.contents.posts = [
-              ...posts,
-              ...watchedState.contents.posts,
-            ];
-            watchedState.loadedFeeds.push([data.url, feedId]);
-            watchedState.status = 'filling';
-          } else {
-            throw new Error('errors.notRSS');
-          }
-        })
-        .catch((error) => {
-          const { message } = error;
-          watchedState.form.errors = message === 'timeout of 5000ms exceeded' ? 'errors.timeout' : message;
-          watchedState.status = 'filling';
-        });
-    })
-    .catch((err) => {
-      const { message } = err;
-      watchedState.form.errors = message;
-      watchedState.status = 'filling';
-    });
+              watchedState.contents.feeds.unshift(feed);
+              watchedState.contents.posts = [
+                ...posts,
+                ...watchedState.contents.posts,
+              ];
+              watchedState.loadedFeeds.push([data.url, feedId]);
+              watchedState.status = "filling";
+            } else {
+              throw new Error("errors.notRSS");
+            }
+          })
+          .catch((error) => {
+            const { message } = error;
+            watchedState.form.errors =
+              message === "timeout of 5000ms exceeded"
+                ? "errors.timeout"
+                : message;
+            watchedState.status = "filling";
+          });
+      })
+      .catch((err) => {
+        const { message } = err;
+        watchedState.form.errors = message;
+        watchedState.status = "filling";
+      });
   });
 
-  elements.posts.addEventListener('click', (event) => {
+  elements.posts.addEventListener("click", (event) => {
     if (event.target.dataset.id) {
       const { id } = event.target.dataset;
-      if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
-        console.error('Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
+      if (
+        !watchedState ||
+        !watchedState.contents ||
+        !watchedState.contents.posts
+      ) {
+        console.error(
+          "Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!"
+        );
         return;
       }
       watchedState.contents.posts.forEach((post) => {
