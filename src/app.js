@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';

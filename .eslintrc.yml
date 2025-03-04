@@ -8,7 +8,7 @@ parserOptions:
   sourceType: module
 rules:
   quotes: ["error", "single"]
-  indent: "off"
+  indent: ["error", ""]
   no-param-reassign: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
   no-console: 0
