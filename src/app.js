@@ -171,14 +171,8 @@ export default () => {
   elements.posts.addEventListener('click', (event) => {
     if (event.target.dataset.id) {
       const { id } = event.target.dataset;
-      if (
-        !watchedState ||
-        !watchedState.contents ||
-        !watchedState.contents.posts
-      ) {
-        console.error(
-          'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!',
-        );
+      if ( !watchedState || !watchedState.contents || !watchedState.contents.posts ) {
+        console.error( 'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
         return;
       }
       watchedState.contents.posts.forEach((post) => {
