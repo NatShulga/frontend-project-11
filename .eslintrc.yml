@@ -9,6 +9,8 @@ parserOptions:
 rules:
   quotes: ["error", "single"]
   indent: ["error", ""]
+  space-in-parens: ["error", "always"]
+  object-curly-newline: ["error", "always"]
   no-param-reassign: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
   no-console: 0

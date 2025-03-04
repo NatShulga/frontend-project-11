@@ -127,7 +127,12 @@ export default () => {
           .get(getUrlRss(newRss.url), { timeout: 5000 })
           .then((response) => {
             if (response.status >= 200 && response.status < 300) {
-              const { title, link, description, items } = parseXML(response.data);
+              const { 
+                title, 
+                link, 
+                description, 
+                items,
+              } = parseXML(response.data);
 
               const feedId = uniqueId('feed_');
               const feed = {
