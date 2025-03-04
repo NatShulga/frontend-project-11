@@ -4,6 +4,8 @@ import axios from 'axios';
 import watch from './view.js';
 import locales from './locales/index.js';
 import parse from './rss-parser.js';
+import { uniqueId } from 'lodash';
+import parseXML from './rss-parser.js';
 
 const getUrlRss = (rssUrl) => {
   const proxyUrl = new URL('https://allorigins.hexlet.app/get');
@@ -69,7 +71,8 @@ export default () => {
           .filter((post) => !titlesOfPosts.includes(post.title))
           .map((item) => {
             const feedId = idOfFeed;
-            return { ...item, feedId };
+            const id = uniqueId('post_');
+            return { ...item, feedId, id };
           });
         if (watchedState.loadedFeeds.length > 0) {
           watchedState.contents.posts = [
@@ -114,36 +117,51 @@ export default () => {
     });
 
     schema
-      .validate(newRss, { abortEarly: false })
-      .then((data) => {
-        watchedState.status = 'loading';
-        axios
-          .get(getUrlRss(data.url), { timeout: 5000 })
-          .then((response) => {
-            if (response.status >= 200 && response.status < 300) {
-              const { feed, posts } = parse(response.data);
-              watchedState.contents.feeds.unshift(feed);
-              watchedState.contents.posts = [
-                ...posts,
-                ...watchedState.contents.posts,
-              ];
-              watchedState.loadedFeeds.push([data.url, feed.id]);
-              watchedState.status = 'filling';
-            } else {
-              throw new Error('errors.notRSS');
-            }
-          })
-          .catch((error) => {
-            const { message } = error;
-            watchedState.form.errors = message === 'timeout of 5000ms exceeded' ? 'errors.timeout' : message;
+    .validate(newRss, { abortEarly: false })
+    .then((data) => {
+      watchedState.status = 'loading';
+      axios
+        .get(getUrlRss(data.url), { timeout: 5000 })
+        .then((response) => {
+          if (response.status >= 200 && response.status < 300) {
+            const { title, link, description, items } = parseXML(response.data);
+            const feedId = uniqueId('feed_');
+            const feed = {
+              url: data.url,
+              title: title,
+              link: link,
+              description: description,
+              id: feedId,
+            };
+
+            const posts = items.map((item) => ({
+              ...item,
+              id: uniqueId('post_'),
+              feedId: feedId,
+            }));
+
+            watchedState.contents.feeds.unshift(feed);
+            watchedState.contents.posts = [
+              ...posts,
+              ...watchedState.contents.posts,
+            ];
+            watchedState.loadedFeeds.push([data.url, feedId]);
             watchedState.status = 'filling';
-          });
-      })
-      .catch((err) => {
-        const { message } = err;
-        watchedState.form.errors = message;
-        watchedState.status = 'filling';
-      });
+          } else {
+            throw new Error('errors.notRSS');
+          }
+        })
+        .catch((error) => {
+          const { message } = error;
+          watchedState.form.errors = message === 'timeout of 5000ms exceeded' ? 'errors.timeout' : message;
+          watchedState.status = 'filling';
+        });
+    })
+    .catch((err) => {
+      const { message } = err;
+      watchedState.form.errors = message;
+      watchedState.status = 'filling';
+    });
   });
 
   elements.posts.addEventListener('click', (event) => {

@@ -16,17 +16,21 @@ const parseXML = (data) => {
 
   const posts = [];
 
-  const items = doc.querySelectorAll('item');
-  items.forEach((item) => {
-    const post = {
-      title: item.querySelector('title').textContent,
-      url: item.querySelector('link').textContent,
-      description: item.querySelector('description').textContent,
-    };
+  const items = [...doc.querySelectorAll('item')].map((item) => ({
+    title: item.querySelector('title')?.textContent,
+    link: item.querySelector('link')?.textContent,
+    description: item.querySelector('description')?.textContent,
+  }));
+    
 
-    posts.push(post);
-  });
-  return { feed, posts };
+  return {
+    title: doc.querySelector('title')?.textContent,
+    link: doc.querySelector('link')?.textContent,
+    description: doc.querySelector('description')?.textContent,
+    items: items,
+    posts: posts,
+    feed: feed,
+  };
 };
 
 export default parseXML;
