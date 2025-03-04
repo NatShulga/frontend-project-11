@@ -3,8 +3,8 @@ const parseXML = (data) => {
   const doc = parser.parseFromString(data.contents, 'application/xml');
 
   const parserError = doc.querySelector('parsererror');
-    if (parserError) {
-  throw new Error('errors.urlIsNotRSS');
+  if (parserError) {
+    throw new Error('errors.urlIsNotRSS');
   }
 
   const items = [...doc.querySelectorAll('item')].map((item) => ({
