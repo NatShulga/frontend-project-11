@@ -66,8 +66,10 @@ export default () => {
       axios
         .get(getUrlRss(url))
         .then((response) => {
-          const { posts } = parseXML(response.data);
-          const newPosts = posts
+          const { items } = parseXML(response.data);
+          console.log('Данные из parseXML:', { items });
+          
+          const newPosts = items
             .filter((post) => !titlesOfPosts.includes(post.title))
             .map((item) => {
               const feedId = idOfFeed;
@@ -175,7 +177,7 @@ export default () => {
         !watchedState.contents.posts
       ) {
         console.error(
-          'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!'
+          'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!',
         );
         return;
       }

@@ -12,7 +12,7 @@ const parseXML = (data) => {
     link: item.querySelector('link')?.textContent,
     description: item.querySelector('description')?.textContent,
   }));
-    
+
   return {
     title: doc.querySelector('title')?.textContent,
     link: doc.querySelector('link')?.textContent,
