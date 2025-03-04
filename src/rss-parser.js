@@ -17,7 +17,11 @@ const parseXML = (data) => {
     title: doc.querySelector('title')?.textContent,
     link: doc.querySelector('link')?.textContent,
     description: doc.querySelector('description')?.textContent,
-    items,
+    items: [...doc.querySelectorAll('item')].map((item) => ({
+      title: item.querySelector('title')?.textContent,
+      link: item.querySelector('link')?.textContent,
+      description: item.querySelector('description')?.textContent,
+  })),
   };
 };
 
