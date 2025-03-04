@@ -11,6 +11,7 @@ rules:
   no-param-reassign: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
   no-console: 0
+  operator-linebreak: "off"
   import/extensions:
     - error
     - ignorePackages

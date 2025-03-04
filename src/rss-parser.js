@@ -7,12 +7,6 @@ const parseXML = (data) => {
     throw new Error('errors.urlIsNotRSS');
   }
 
-  const items = [...doc.querySelectorAll('item')].map((item) => ({
-    title: item.querySelector('title')?.textContent,
-    link: item.querySelector('link')?.textContent,
-    description: item.querySelector('description')?.textContent,
-  }));
-
   return {
     title: doc.querySelector('title')?.textContent,
     link: doc.querySelector('link')?.textContent,
@@ -21,7 +15,7 @@ const parseXML = (data) => {
       title: item.querySelector('title')?.textContent,
       link: item.querySelector('link')?.textContent,
       description: item.querySelector('description')?.textContent,
-  })),
+    })),
   };
 };
 

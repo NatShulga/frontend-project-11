@@ -7,6 +7,7 @@ import locales from './locales/index.js';
 import parseXML from './rss-parser.js';
 
 const getUrlRss = (rssUrl) => {
+  console.log('getUrlRss: rssUrl =', rssUrl);
   const proxyUrl = new URL('https://allorigins.hexlet.app/get');
   proxyUrl.searchParams.set('disableCache', true);
   proxyUrl.searchParams.set('url', rssUrl);
@@ -62,13 +63,12 @@ export default () => {
       return;
     }
     const titlesOfPosts = watchedState.contents.posts.map(({ title }) => title);
-    const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) =>
-      axios
+    const arrayOfPromises = watchedState.loadedFeeds.map(([url, idOfFeed]) => axios
         .get(getUrlRss(url))
         .then((response) => {
           const { items } = parseXML(response.data);
           console.log('Данные из parseXML:', { items });
-          
+
           const newPosts = items
             .filter((post) => !titlesOfPosts.includes(post.title))
             .map((item) => {
@@ -120,23 +120,22 @@ export default () => {
 
     schema
       .validate(newRss, { abortEarly: false })
-      .then((data) => {
+      .then((newRss) => {
         watchedState.status = 'loading';
         axios
-          .get(getUrlRss(data.url), { timeout: 5000 })
+          .get(getUrlRss(newRss.url), { timeout: 5000 })
           .then((response) => {
             if (response.status >= 200 && response.status < 300) {
-              const { title, link, description, items } = parseXML(
-                response.data);
+              const { title, link, description, items } = parseXML(response.data);
 
               const feedId = uniqueId('feed_');
               const feed = {
-              url: data.url,
-              title,
+              url: newRss.url,
+                title,
                 link,
                 description,
                 id: feedId,
-                };
+              };
 
               const posts = items.map((item) => ({
                 ...item,
@@ -149,7 +148,7 @@ export default () => {
                 ...posts,
                 ...watchedState.contents.posts,
               ];
-              watchedState.loadedFeeds.push([data.url, feedId]);
+              watchedState.loadedFeeds.push([newRss.url, feedId]);
               watchedState.status = 'filling';
             } else {
               throw new Error('errors.notRSS');
