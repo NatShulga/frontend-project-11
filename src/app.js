@@ -1,4 +1,4 @@
-/* eslint-disable indent */
+/* eslint-disable indent */ /*eslint space-in-parens: ["error", "never"]*/ 
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
