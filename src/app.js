@@ -1,4 +1,5 @@
-/* eslint-disable indent */ /*eslint space-in-parens: ["error", "never"]*/ 
+/* eslint-disable indent */
+/*eslint space-in-parens: ["error", "never"]*/
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
@@ -127,10 +128,10 @@ export default () => {
           .get(getUrlRss(newRss.url), { timeout: 5000 })
           .then((response) => {
             if (response.status >= 200 && response.status < 300) {
-              const { 
-                title, 
-                link, 
-                description, 
+              const {
+                title,
+                link,
+                description,
                 items,
               } = parseXML(response.data);
 
