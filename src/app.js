@@ -177,7 +177,7 @@ export default () => {
     if (event.target.dataset.id) {
       const { id } = event.target.dataset;
       if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
-        /* eslint space-in-parens: ["error", "never"] */
+        // eslint-disable-next-line space-in-parens
         console.error( 'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
         return;
       }
