@@ -176,9 +176,9 @@ export default () => {
   elements.posts.addEventListener('click', (event) => {
     if (event.target.dataset.id) {
       const { id } = event.target.dataset;
-      if ( !watchedState || !watchedState.contents || !watchedState.contents.posts ) {
+      if (!watchedState || !watchedState.contents || !watchedState.contents.posts) {
         /* eslint space-in-parens: ["error", "never"] */
-        console.error ( 'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
+        console.error( 'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
         return;
       }
       watchedState.contents.posts.forEach((post) => {
