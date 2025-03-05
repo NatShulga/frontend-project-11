@@ -1,5 +1,4 @@
 /* eslint-disable indent */
-/*eslint space-in-parens: ["error", "never"]*/
 import * as yup from 'yup';
 import i18next from 'i18next';
 import axios from 'axios';
@@ -178,6 +177,7 @@ export default () => {
     if (event.target.dataset.id) {
       const { id } = event.target.dataset;
       if ( !watchedState || !watchedState.contents || !watchedState.contents.posts ) {
+        /*eslint space-in-parens: ["error", "never"]*/
         console.error( 'Ошибка: watchedState, watchedState.contents или watchedState.contents.posts не определены!');
         return;
       }
